@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MCPS SSL Hours Form Filler</title>
+<meta name="description" content="Fill out MCPS Form 560-51 (Student Service Learning Activity Verification) online, download the completed PDF, and email it to your counselor or SSL coordinator.">
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<style>
+  :root{
+    --bg:#f4f6fa; --card:#ffffff; --ink:#1a2233; --muted:#5b6474;
+    --brand:#1f5fbf; --brand-dark:#174a96; --accent:#0e8a5f;
+    --border:#d8dee9; --danger:#b3372f; --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  header{background:linear-gradient(135deg,#1f5fbf,#123c7d);color:#fff;padding:2.2rem 1rem 1.8rem;text-align:center}
+  header h1{margin:0 0 .4rem;font-size:1.7rem}
+  header p{margin:.2rem auto;max-width:44rem;opacity:.92;font-size:.97rem}
+  main{max-width:52rem;margin:0 auto;padding:1rem 1rem 4rem}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.3rem 1.4rem;margin:1.1rem 0;box-shadow:0 1px 3px rgba(20,30,60,.06)}
+  .card h2{margin:.1rem 0 .2rem;font-size:1.15rem;color:var(--brand-dark)}
+  .card .sub{margin:0 0 .9rem;color:var(--muted);font-size:.9rem}
+  label{display:block;font-weight:600;font-size:.88rem;margin:.7rem 0 .25rem}
+  label .opt{font-weight:400;color:var(--muted)}
+  input[type=text],input[type=email],input[type=date],input[type=number],select,textarea{
+    width:100%;padding:.55rem .65rem;border:1px solid var(--border);border-radius:8px;
+    font-size:1rem;font-family:inherit;background:#fff;color:var(--ink)
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid #9db9e6;border-color:var(--brand)}
+  textarea{resize:vertical}
+  .row{display:grid;gap:.4rem .9rem}
+  @media(min-width:620px){
+    .row.c2{grid-template-columns:1fr 1fr}
+    .row.c3{grid-template-columns:2fr 1fr 1fr}
+    .row.c21{grid-template-columns:2fr 1fr}
+  }
+  .hint{font-size:.8rem;color:var(--muted);margin:.25rem 0 0}
+  .radio-line{display:flex;gap:1.4rem;margin:.3rem 0 .2rem;font-size:.95rem}
+  .radio-line label{display:flex;align-items:center;gap:.4rem;font-weight:400;margin:0}
+  .btn{display:inline-block;border:0;border-radius:9px;padding:.75rem 1.3rem;font-size:1.05rem;font-weight:600;cursor:pointer;text-decoration:none;text-align:center}
+  .btn-primary{background:var(--brand);color:#fff}
+  .btn-primary:hover{background:var(--brand-dark)}
+  .btn-green{background:var(--accent);color:#fff}
+  .btn-green:hover{background:#0b6e4c}
+  .btn-ghost{background:#eef2f8;color:var(--brand-dark)}
+  .btn-ghost:hover{background:#e2e9f4}
+  .btn-row{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1rem}
+  .notice{background:#fff8e6;border:1px solid #ecd9a0;border-radius:10px;padding:.7rem .9rem;font-size:.88rem;margin:.8rem 0}
+  .privacy{background:#e9f6ef;border:1px solid #bfe3d0;border-radius:10px;padding:.7rem .9rem;font-size:.88rem;margin:.8rem 0}
+  #result{display:none}
+  #result.show{display:block}
+  .steps{padding-left:1.2rem;margin:.5rem 0}
+  .steps li{margin:.45rem 0}
+  .error{color:var(--danger);font-size:.9rem;margin-top:.5rem;display:none}
+  footer{text-align:center;color:var(--muted);font-size:.82rem;padding:2rem 1rem;max-width:46rem;margin:0 auto}
+  footer a{color:var(--brand)}
+  .badge{display:inline-block;background:#eef2f8;color:var(--brand-dark);border-radius:20px;padding:.15rem .7rem;font-size:.78rem;font-weight:600;margin-bottom:.5rem}
+</style>
+</head>
+<body>
+<header>
+  <h1>MCPS SSL Hours Form Filler</h1>
+  <p>Fill out MCPS Form 560-51 — <em>Student Service Learning Activity Verification</em> — right in your browser, download the completed PDF, and email it to your counselor or SSL coordinator.</p>
+  <p style="font-size:.82rem;opacity:.8">Unofficial student-made tool · Not affiliated with or endorsed by Montgomery County Public Schools</p>
+</header>
+<main>
+
+  <div class="privacy">🔒 <strong>Private by design:</strong> everything happens in your browser. Nothing you type is ever uploaded to a server. Your answers are saved only on this device so you can come back later.</div>
+
+  <form id="sslForm" autocomplete="on">
+
+    <div class="card">
+      <span class="badge">Section I</span>
+      <h2>Student Information</h2>
+      <p class="sub">You (the student) fill this out.</p>
+
+      <div class="row c21">
+        <div>
+          <label for="studentName">Student Name (Last, First, Middle)</label>
+          <input type="text" id="studentName" required placeholder="Smith, Jordan A.">
+        </div>
+        <div>
+          <label for="studentId">Student ID</label>
+          <input type="text" id="studentId" inputmode="numeric" placeholder="123456">
+        </div>
+      </div>
+
+      <div class="row c21">
+        <div>
+          <label for="school">School</label>
+          <select id="school"><option value="">-- Choose your school --</option></select>
+        </div>
+        <div>
+          <label for="grade">Grade</label>
+          <input type="text" id="grade" inputmode="numeric" placeholder="10">
+        </div>
+      </div>
+
+      <label for="teacher">First Period Teacher</label>
+      <input type="text" id="teacher" placeholder="Ms. Johnson">
+
+      <label for="email">Your E-mail</label>
+      <input type="email" id="email" placeholder="you@example.com">
+
+      <label for="parentName">Parent/Guardian Name</label>
+      <input type="text" id="parentName" placeholder="Taylor Smith">
+
+      <div class="row c2">
+        <div>
+          <label for="phoneHome">Phone: Home or Cell <span class="opt">(optional)</span></label>
+          <input type="text" id="phoneHome" inputmode="tel" placeholder="301-555-1234">
+        </div>
+        <div>
+          <label for="phoneOther">Other Phone <span class="opt">(optional)</span></label>
+          <input type="text" id="phoneOther" inputmode="tel" placeholder="240-555-5678">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="badge">Section II</span>
+      <h2>Nonprofit Organization Information</h2>
+      <p class="sub">Officially completed by your supervisor at the organization. If they gave you the details (or you're preparing the form for them to sign), fill in what you know — anything left blank stays blank on the PDF.</p>
+
+      <label for="orgName">Organization Name</label>
+      <input type="text" id="orgName" placeholder="Manna Food Center">
+
+      <label>Is the organization listed as MCPS SSL on the Montgomery County Volunteer Center website?</label>
+      <div class="radio-line">
+        <label><input type="radio" name="mcvc" value="Yes"> Yes</label>
+        <label><input type="radio" name="mcvc" value="No"> No</label>
+        <label><input type="radio" name="mcvc" value="" checked> Leave blank</label>
+      </div>
+      <p class="hint">If “No,” MCPS Form 560-50 (pre-approval) must be attached. Check the <a href="https://bit.ly/SSLOrganizations" target="_blank" rel="noopener">MCVC list</a>.</p>
+
+      <div class="row c2">
+        <div>
+          <label for="fein">Federal Employer Identification # (EIN) <span class="opt">(optional)</span></label>
+          <input type="text" id="fein" inputmode="numeric" placeholder="52-1234567" maxlength="12">
+        </div>
+        <div>
+          <label for="orgPhone">Organization Phone <span class="opt">(optional)</span></label>
+          <input type="text" id="orgPhone" inputmode="tel" placeholder="301-555-0000">
+        </div>
+      </div>
+
+      <div class="row c21">
+        <div>
+          <label for="orgAddress">Organization Address</label>
+          <input type="text" id="orgAddress" placeholder="123 Main St, Rockville, MD 20850">
+        </div>
+        <div>
+          <label for="orgEmail">Organization E-mail</label>
+          <input type="text" id="orgEmail" placeholder="volunteer@org.example">
+        </div>
+      </div>
+
+      <label for="activity">Describe Activity (in detail)</label>
+      <input type="text" id="activity" placeholder="Sorted and packed food donations for weekend distribution">
+
+      <h2 style="font-size:1rem;margin-top:1.1rem">Service Record</h2>
+      <div class="row c2">
+        <div>
+          <label for="dateFrom">Date From</label>
+          <input type="date" id="dateFrom">
+        </div>
+        <div>
+          <label for="dateTo">Date To</label>
+          <input type="date" id="dateTo">
+        </div>
+      </div>
+      <div class="row c3">
+        <div>
+          <label for="daysService"># Days of Service</label>
+          <input type="text" id="daysService" inputmode="numeric" placeholder="4">
+        </div>
+        <div>
+          <label for="hoursPerDay"># Hours Per Day</label>
+          <input type="text" id="hoursPerDay" inputmode="decimal" placeholder="3">
+          <p class="hint">Max 8 in a 24-hour period</p>
+        </div>
+        <div>
+          <label for="totalHours">Total # Hours</label>
+          <input type="text" id="totalHours" inputmode="decimal" placeholder="12">
+        </div>
+      </div>
+
+      <div class="row c2">
+        <div>
+          <label for="supName">Supervisor Name (print)</label>
+          <input type="text" id="supName" placeholder="Alex Rivera">
+        </div>
+        <div>
+          <label for="supTitle">Supervisor Title</label>
+          <input type="text" id="supTitle" placeholder="Volunteer Coordinator">
+        </div>
+      </div>
+      <label for="supDate">Supervisor Signature Date <span class="opt">(optional — usually filled when they sign)</span></label>
+      <input type="date" id="supDate" style="max-width:14rem">
+      <p class="hint">The supervisor's <em>signature</em> itself must be added by hand (or with a PDF signing tool) — this site can't sign for them.</p>
+    </div>
+
+    <div class="card">
+      <span class="badge">Section III</span>
+      <h2>Student Reflection</h2>
+      <p class="sub">Write one paragraph answering these — the SSL coordinator will return the form if it's incomplete:</p>
+      <ul class="steps" style="font-size:.88rem;color:var(--muted)">
+        <li>What did you do, and what need did your service address?</li>
+        <li>Who benefitted from your service?</li>
+        <li>What did you learn about yourself, and how did helping others make you feel?</li>
+        <li>How was this experience connected to something you learned in a class at school?</li>
+        <li>What skills did you use or build on that could help you with a future career?</li>
+      </ul>
+      <textarea id="reflection" rows="8" placeholder="During my service at ..."></textarea>
+      <p class="hint"><span id="reflCount">0</span> characters — the box on the printed form fits roughly 900–1,100 characters. Longer reflections shrink to fit; if it gets tiny, attach a separate page instead.</p>
+    </div>
+
+    <div class="card">
+      <h2>✉️ Send it to your counselor</h2>
+      <p class="sub">Enter your counselor's (or SSL coordinator's) email — we'll open a ready-to-send draft for you.</p>
+      <label for="counselorEmail">Counselor / SSL Coordinator E-mail</label>
+      <input type="email" id="counselorEmail" placeholder="counselor_name@mcpsmd.org">
+      <p class="hint">Don't know it? Ask your school's front office, or find your SSL coordinator on the <a href="https://www.montgomeryschoolsmd.org/departments/ssl/" target="_blank" rel="noopener">MCPS SSL page</a>. Most staff emails end in <strong>@mcpsmd.org</strong>.</p>
+
+      <div class="btn-row">
+        <button type="submit" class="btn btn-primary" id="generateBtn">📄 Generate My Completed Form</button>
+        <button type="button" class="btn btn-ghost" id="clearBtn">Clear everything</button>
+      </div>
+      <p class="error" id="errMsg"></p>
+    </div>
+  </form>
+
+  <div class="card" id="result">
+    <h2>✅ Your form is ready!</h2>
+    <p class="sub" id="resultFile"></p>
+    <ol class="steps">
+      <li><strong>Download</strong> your completed PDF (it may have downloaded automatically).</li>
+      <li><strong>Email it</strong> — tap a button below to open a pre-written draft to your counselor, then <strong>attach the downloaded PDF</strong> before hitting send. <em>(Browsers can't attach files automatically — don't forget this step!)</em></li>
+    </ol>
+    <div class="btn-row">
+      <button type="button" class="btn btn-primary" id="downloadAgain">⬇️ Download PDF</button>
+      <button type="button" class="btn btn-green" id="shareBtn" style="display:none">📤 Share PDF (attaches automatically)</button>
+      <a class="btn btn-green" id="gmailLink" target="_blank" rel="noopener">📧 Open Gmail draft</a>
+      <a class="btn btn-ghost" id="mailtoLink">📮 Open Mail app draft</a>
+    </div>
+    <div class="notice">Remember: your <strong>supervisor still needs to sign Section II</strong> before the form is officially complete. Many students email the filled form to their supervisor first, get it signed, then send it to their counselor/SSL coordinator.</div>
+  </div>
+
+</main>
+<footer>
+  <p>This is a free, unofficial tool made by a student to make SSL paperwork easier. It is <strong>not affiliated with, endorsed by, or connected to Montgomery County Public Schools</strong>. The official form and instructions live at <a href="https://ww2.montgomeryschoolsmd.org/departments/forms/pdf/560-51.pdf" target="_blank" rel="noopener">montgomeryschoolsmd.org</a>.</p>
+  <p>No data ever leaves your device. <a href="https://github.com/aarushkandukoori/mcps-ssl-form-filler" target="_blank" rel="noopener">Source code on GitHub</a>.</p>
+</footer>
+
+<script>
+const SCHOOLS = ["A. Mario Loiederman MS - 787","Albert Einstein HS - 789","Alternative Education Programs - 239","Argyle MS - 823","Benjamin Banneker MS - 333","Bethesda-Chevy Chase HS - 406","Briggs Chaney MS - 335","Cabin John MS - 606","Carl Sandburg Learning Center SSAP - 215","Clarksburg HS - 249","Col. Zadok Magruder HS - 510","Damascus HS - 701","Earle B. Wood MS - 820","Eastern MS - 775","Emory Grove Center - 890","Forest Oak MS - 248","Francis Scott Key MS - 311","Gaithersburg HS - 551","Gaithersburg MS - 554","Hallie Wells MS - 345","Herbert Hoover MS - 228","James Hubert Blake HS - 321","John F. Kennedy HS - 815","John Poole MS - 247","John T. Baker MS - 705","Julius West MS - 211","Kingsview MS - 708","Lakelands Park MS - 522","Lathrop E. Smith Environmental Education Center - 990","Longview School SSAP - 951","MacDonald Knolls Early Childhood Center - 793","Martin Luther King MS - 107","MBLI","Mecca Business Learning Institute","Montgomery Blair HS - 757","Montgomery Village MS - 557","Neelsville MS - 115","Newport Mill MS - 792","North Bethesda MS - 413","Northwest HS - 246","Northwood HS - 796","Odessa Shannon MS - 818","Paint Branch HS - 315","Parkland MS - 812","Poolesville HS - 152","Quince Orchard HS - 125","Redland MS - 562","Regional Institute for Children and Adolescents (RICA) SSAP - 965","Richard Montgomery HS - 201","Ridgeview MS - 105","Robert Frost MS - 237","Roberto W. Clemente MS - 157","Rock Terrace School SSAP - 916","Rockville HS - 230","Rocky Hill MS - 707","Rosa M. Parks MS - 155","Seneca Valley HS - 104","Shady Grove MS - 521","Sherwood HS - 503","Silver Creek MS – 835","Silver Spring International MS - 647","Sligo MS - 778","Springbrook HS - 798","Stephen Knolls School SSAP - 799","Takoma Park MS - 755","Thomas Edison High School of Technology - 748","Thomas S. Wootton HS - 234","Thomas W. Pyle MS - 428","Tilden MS - 232","Upcounty Early Childhood Center (UCECC) - 918","Walt Whitman HS - 427","Walter Johnson HS - 424","Watkins Mill HS - 545","Westland MS - 412","Wheaton HS - 782","White Oak MS - 811","William H. Farquhar MS - 507","Winston Churchill HS - 602"];
+
+const schoolSel = document.getElementById('school');
+for (const s of SCHOOLS) {
+  const o = document.createElement('option');
+  o.value = s; o.textContent = s;
+  schoolSel.appendChild(o);
+}
+
+const FIELD_IDS = ["studentName","studentId","school","grade","teacher","email","parentName","phoneHome","phoneOther","orgName","fein","orgPhone","orgAddress","orgEmail","activity","dateFrom","dateTo","daysService","hoursPerDay","totalHours","supName","supTitle","supDate","reflection","counselorEmail"];
+
+// ---- persistence (this device only) ----
+const STORAGE_KEY = 'ssl-form-560-51';
+function saveState(){
+  const st = {};
+  for (const id of FIELD_IDS) st[id] = document.getElementById(id).value;
+  st.mcvc = (document.querySelector('input[name=mcvc]:checked')||{}).value || '';
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(st)); } catch(e){}
+}
+function loadState(){
+  let st; try { st = JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); } catch(e){ return; }
+  for (const id of FIELD_IDS) if (st[id]) document.getElementById(id).value = st[id];
+  if (st.mcvc !== undefined) {
+    const r = document.querySelector(`input[name=mcvc][value="${st.mcvc}"]`);
+    if (r) r.checked = true;
+  }
+  updateCount();
+}
+document.getElementById('sslForm').addEventListener('input', () => { saveState(); updateCount(); });
+loadState();
+
+function updateCount(){
+  document.getElementById('reflCount').textContent = document.getElementById('reflection').value.length;
+}
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if (!confirm('Clear everything you typed?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  document.getElementById('sslForm').reset();
+  document.getElementById('result').classList.remove('show');
+  updateCount();
+});
+
+// ---- helpers ----
+function phoneParts(raw){
+  const d = (raw||'').replace(/\D/g,'');
+  if (!d) return ['','',''];
+  if (d.length === 11 && d[0]==='1') return [d.slice(1,4), d.slice(4,7), d.slice(7,11)];
+  if (d.length >= 10) return [d.slice(0,3), d.slice(3,6), d.slice(6,10)];
+  if (d.length >= 7) return ['', d.slice(0,3), d.slice(3,7)];
+  return ['','',d];
+}
+function usDate(iso){ // yyyy-mm-dd -> mm/dd/yyyy
+  if (!iso) return '';
+  const [y,m,d] = iso.split('-');
+  return `${m}/${d}/${y}`;
+}
+function dateParts(iso){
+  if (!iso) return ['','',''];
+  const [y,m,d] = iso.split('-');
+  return [m,d,y];
+}
+const v = id => document.getElementById(id).value.trim();
+
+// ---- PDF generation ----
+let pdfBytesCache = null;   // blank form bytes
+let filledBlob = null, filledName = 'MCPS-SSL-Form-560-51.pdf';
+
+async function fillPdf(){
+  const { PDFDocument, StandardFonts } = PDFLib;
+  if (!pdfBytesCache) {
+    const resp = await fetch('560-51.pdf');
+    if (!resp.ok) throw new Error('Could not load the blank form PDF.');
+    pdfBytesCache = await resp.arrayBuffer();
+  }
+  const doc = await PDFDocument.load(pdfBytesCache.slice(0));
+  const form = doc.getForm();
+  const helv = await doc.embedFont(StandardFonts.Helvetica);
+
+  const setText = (name, value, size) => {
+    if (!value) return;
+    try {
+      const f = form.getTextField(name);
+      f.setText(value);
+      if (size) f.setFontSize(size);
+    } catch(e){ console.warn('field', name, e); }
+  };
+
+  const [h1,h2,h3] = phoneParts(v('phoneHome'));
+  const [o1,o2,o3] = phoneParts(v('phoneOther'));
+  const [p1,p2,p3] = phoneParts(v('orgPhone'));
+  const [sm,sd,sy] = dateParts(v('supDate'));
+
+  // Section I
+  setText('2', v('studentName'));
+  setText('3', v('studentId'));
+  setText('4', v('grade'));
+  setText('5', v('teacher'));
+  setText('6', v('email'));
+  setText('7', v('parentName'));
+  setText('8',h1); setText('9',h2); setText('10',h3);
+  setText('11',o1); setText('12',o2); setText('13',o3);
+
+  // School dropdown
+  const schoolVal = v('school');
+  if (schoolVal) {
+    try {
+      const dd = form.getDropdown('ALL SCHOOLS 4/2026 Except Elementary');
+      try { dd.select(schoolVal); }
+      catch(e) {
+        // fall back to writing the value directly so the name still prints
+        dd.acroField.dict.set(PDFLib.PDFName.of('V'), PDFLib.PDFHexString.fromText(schoolVal));
+        dd.markAsDirty ? dd.markAsDirty() : null;
+      }
+    } catch(e){ console.warn('school dropdown', e); }
+  }
+
+  // Section II
+  setText('14', v('orgName'));
+  const mcvc = (document.querySelector('input[name=mcvc]:checked')||{}).value;
+  if (mcvc === 'Yes' || mcvc === 'No') {
+    // '14a' is a checkbox with two widgets whose on-states are /Yes and /No
+    try {
+      const cb = form.getCheckBox('14a');
+      const onName = PDFLib.PDFName.of(mcvc);
+      cb.acroField.dict.set(PDFLib.PDFName.of('V'), onName);
+      for (const w of cb.acroField.getWidgets()) {
+        w.setAppearanceState(String(w.getOnValue()) === '/'+mcvc ? onName : PDFLib.PDFName.of('Off'));
+      }
+    } catch(e){ console.warn('14a', e); }
+  }
+  const fein = v('fein').replace(/\D/g,'').slice(0,9);
+  for (let i=0;i<fein.length;i++) setText(String(15+i), fein[i]);
+  setText('24',p1); setText('25',p2); setText('26',p3);
+  setText('27', v('orgAddress'));
+  setText('28', v('orgEmail'));
+  setText('29', v('activity'));
+  setText('30', usDate(v('dateFrom')));
+  setText('31', usDate(v('dateTo')));
+  setText('32', v('daysService'));
+  setText('33', v('hoursPerDay'));
+  setText('34', v('totalHours'));
+  setText('35', v('supName'));
+  setText('36', v('supTitle'));
+  setText('37',sm); setText('38',sd); setText('39',sy,8);
+
+  // Section III — reflection, auto-shrink to fit the box
+  const refl = v('reflection');
+  if (refl) {
+    try {
+      const f = form.getTextField('40');
+      try { f.enableMultiline(); } catch(e){}
+      let size = 10;
+      if (refl.length > 700) size = 9;
+      if (refl.length > 950) size = 8;
+      if (refl.length > 1250) size = 7;
+      if (refl.length > 1650) size = 6;
+      f.setText(refl);
+      f.setFontSize(size);
+    } catch(e){ console.warn('reflection', e); }
+  }
+
+  form.updateFieldAppearances(helv);
+  return doc.save();
+}
+
+function triggerDownload(){
+  if (!filledBlob) return;
+  const url = URL.createObjectURL(filledBlob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filledName;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 4000);
+}
+
+function emailPieces(){
+  const to = v('counselorEmail');
+  const student = v('studentName') || 'a student';
+  const school = v('school');
+  const hours = v('totalHours');
+  const subject = `SSL Verification Form (560-51) — ${student}${hours ? ` — ${hours} hours` : ''}`;
+  const body =
+`Hello,
+
+Please find my completed MCPS Form 560-51 (Student Service Learning Activity Verification) attached.
+
+Student: ${student}${v('studentId') ? `\nStudent ID: ${v('studentId')}` : ''}${school ? `\nSchool: ${school}` : ''}${v('orgName') ? `\nOrganization: ${v('orgName')}` : ''}${hours ? `\nTotal SSL hours: ${hours}` : ''}
+
+Thank you!`;
+  return { to, subject, body };
+}
+
+document.getElementById('sslForm').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  const err = document.getElementById('errMsg');
+  err.style.display = 'none';
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true; btn.textContent = 'Generating…';
+  try {
+    const bytes = await fillPdf();
+    filledBlob = new Blob([bytes], {type:'application/pdf'});
+    const who = v('studentName').split(',')[0].replace(/[^A-Za-z0-9 _-]/g,'').trim().replace(/\s+/g,'-');
+    filledName = `MCPS-SSL-Form-560-51${who ? '-'+who : ''}.pdf`;
+    triggerDownload();
+
+    // set up email links
+    const { to, subject, body } = emailPieces();
+    const enc = encodeURIComponent;
+    document.getElementById('gmailLink').href =
+      `https://mail.google.com/mail/?view=cm&fs=1&to=${enc(to)}&su=${enc(subject)}&body=${enc(body)}`;
+    document.getElementById('mailtoLink').href =
+      `mailto:${enc(to)}?subject=${enc(subject)}&body=${enc(body)}`;
+    document.getElementById('resultFile').textContent = `Saved as ${filledName}`;
+
+    // Web Share API — attaches the PDF directly (mostly phones/tablets)
+    const shareBtn = document.getElementById('shareBtn');
+    const file = new File([filledBlob], filledName, {type:'application/pdf'});
+    if (navigator.canShare && navigator.canShare({files:[file]})) {
+      shareBtn.style.display = '';
+      shareBtn.onclick = () => {
+        navigator.share({ files:[file], title: subject, text: body }).catch(()=>{});
+      };
+    } else {
+      shareBtn.style.display = 'none';
+    }
+
+    const res = document.getElementById('result');
+    res.classList.add('show');
+    res.scrollIntoView({behavior:'smooth'});
+  } catch(e) {
+    console.error(e);
+    err.textContent = 'Something went wrong generating the PDF: ' + e.message + ' — try refreshing the page.';
+    err.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.textContent = '📄 Generate My Completed Form';
+  }
+});
+
+document.getElementById('downloadAgain').addEventListener('click', triggerDownload);
+</script>
+</body>
+</html>
